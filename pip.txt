@@ -1,0 +1,5 @@
+pip install pycrypto
+
+# /Users/Ron2/.pyenv/versions/2.7.10/envs/Env_Py2710/lib/python2.7/site-packages
+# 这个目录把 crypto 弄成 Crypto (Mac区分大小写)
+
