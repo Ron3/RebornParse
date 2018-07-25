@@ -26,7 +26,7 @@ class Parse(object):
         """
         self.excelSuffix = ".xls"
         self.excelSuffix2 = ".xlsx"
-        self.saveFileSuffix = ".dat"                # 保存的格式后缀
+        self.saveFileSuffix = ".txt"                # 保存的格式后缀
 
         self.excelPath = ""                         # excel表格的路径
         self.outputPath = ""                        # 保存解出来的
