@@ -157,6 +157,10 @@ class Parse(object):
         normalTitleArray = self._getTitleArrayForNormal(sheetObj)
         multiLanTitleArray = self._getTitleArrayForMultiLan(sheetObj)
 
+        # print "allTitleArray ==> ", json.dumps(allTitleArray)
+        # print "normalTitleArray ==> ", json.dumps(normalTitleArray)
+        # print "multiLanTitleArray ==> ", json.dumps(multiLanTitleArray)
+
         ''' 3, 开始解表 '''
         resultArray = []
         for rowIndex in range(sheetObj.nrows):
@@ -194,7 +198,7 @@ class Parse(object):
 
     def _writeToFile(self, resultArray, sheetObj):
         """
-        写入文件
+        写入文件.并且这里处理多国语言
         :param resultArray: 
         :param sheetObj: 
         :return: 
@@ -207,7 +211,7 @@ class Parse(object):
             multiLanDataDic[lan] = []
 
         for rowDic in resultArray:
-            totalLanDataDic = {}                     # 多国语言版本的数据抽出来放在这里
+            totalLanDataDic = {}                            # 多国语言版本的数据抽出来放在这里
             for title in multiTitleArray:
                 v = rowDic.pop(title)
                 totalLanDataDic[title] = v
@@ -219,11 +223,12 @@ class Parse(object):
 
             for title, value in totalLanDataDic.items():
                 lan = self._getEnumLanByTitle(title)        # 得到语言枚举
-                rowLanDic = everyRowLanDic.get(lan)            # 得到这一行这一种语言的dic
+                rowLanDic = everyRowLanDic.get(lan)         # 得到这一行这一种语言的dic
                 if rowLanDic == None:
                     exit(1)
 
                 rowLanDic[self._getTitleWithNotSuffix(title)] = value
+                # print "Ron => ", self._getTitleWithNotSuffix(title), value
                 # print("rowLanDic===> ", rowLanDic)
 
             ''' 然后在把每一种语言放进去对应的数组 '''
@@ -237,7 +242,7 @@ class Parse(object):
         for lan, ronLanArray in multiLanDataDic.items():
             # data = bson.dumps({"dataArray": ronLanArray})
             # data = json.dumps({"dataArray": resultArray})
-            data = json.dumps(resultArray)
+            data = json.dumps(ronLanArray)
             fullPath = self._getSaveFileFullPath(sheetObj.name, lan)
             fileObj = open(fullPath, "wb")
             fileObj.write(data.encode("utf-8"))
@@ -341,17 +346,17 @@ class Parse(object):
 
 if __name__ == "__main__":
     PARSE_SETTING_DIC = {}
-    PARSE_SETTING_DIC[u"-中"] = "CN"
-    PARSE_SETTING_DIC[u"-繁"] = "TC"
-    PARSE_SETTING_DIC[u"-英"] = "EN"
-    PARSE_SETTING_DIC[u"-日"] = "JP"
-    PARSE_SETTING_DIC[u"-韩"] = "KO"
-    PARSE_SETTING_DIC[u"-法"] = "FR"
-    PARSE_SETTING_DIC[u"-德"] = "DE"
-    PARSE_SETTING_DIC[u"-泰"] = "TH"
-    PARSE_SETTING_DIC[u"-葡"] = "PT"
-    PARSE_SETTING_DIC[u"-俄"] = "RU"
-    PARSE_SETTING_DIC[u"-西"] = "ES"
+    PARSE_SETTING_DIC[u"-中"] = "cn"
+    PARSE_SETTING_DIC[u"-繁"] = "tc"
+    PARSE_SETTING_DIC[u"-英"] = "en"
+    PARSE_SETTING_DIC[u"-日"] = "jp"
+    PARSE_SETTING_DIC[u"-韩"] = "ko"
+    PARSE_SETTING_DIC[u"-法"] = "fr"
+    PARSE_SETTING_DIC[u"-德"] = "de"
+    PARSE_SETTING_DIC[u"-泰"] = "th"
+    PARSE_SETTING_DIC[u"-葡"] = "pt"
+    PARSE_SETTING_DIC[u"-俄"] = "ru"
+    PARSE_SETTING_DIC[u"-西"] = "es"
 
     obj = Parse(PARSE_SETTING_DIC)
     obj.start()
