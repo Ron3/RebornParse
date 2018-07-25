@@ -135,9 +135,11 @@ class Parse(object):
             excelDataObj = xlrd.open_workbook(fullPath)
             sheetNameArray = excelDataObj.sheet_names()
             for sheetName in sheetNameArray:
+                jsonTitleDic = self._getTitleConfigNameBySheetName(sheetName)
+
                 sheetObj = excelDataObj.sheet_by_name(sheetName)
                 resultArray = self._parseSheet(sheetObj)
-                self._writeToFile(resultArray, sheetObj)
+                self._writeToFile(resultArray, sheetObj, jsonTitleDic)
 
                 del sheetObj
                 del resultArray
@@ -196,11 +198,12 @@ class Parse(object):
         return resultArray
 
 
-    def _writeToFile(self, resultArray, sheetObj):
+    def _writeToFile(self, resultArray, sheetObj, jsonTitleConfigDic=None):
         """
         写入文件.并且这里处理多国语言
         :param resultArray: 
         :param sheetObj: 
+        :param jsonTitleConfigDic:                json的英文标题头(全在这里转好. C#那边直接读)
         :return: 
         """
         normalTitleArray = self._getTitleArrayForNormal(sheetObj)
@@ -210,11 +213,21 @@ class Parse(object):
         for lan in self.parseSettingDic.values():
             multiLanDataDic[lan] = []
 
+        ''' 1, 这一步是关键操作.把多国语言的抽取出来 '''
+        ''' 2, 并且得到总的英文标题的数据 [{"Name": "神兽", "ID": 1021}] '''
+        allJsonArray = []                                   # 这个就是总的json标题的数据
         for rowDic in resultArray:
             totalLanDataDic = {}                            # 多国语言版本的数据抽出来放在这里
+            jsonDic = {}                                    # 这个就是每一个rowDic对应英文标题的dic
             for title in multiTitleArray:
                 v = rowDic.pop(title)
                 totalLanDataDic[title] = v
+
+            for title, val in rowDic.iteritems():
+                jsonDic[self._getJsonTitle(title, jsonTitleConfigDic, sheetObj.name)] = val
+
+            allJsonArray.append(jsonDic)
+
 
             ''' 每一种语言.需要一个dic.每一个dic是对应一行的数据{"说明-中": "", "名字-中": ""}.其实那个后缀语言是不会有的.只是示例用 '''
             everyRowLanDic = {}
@@ -227,7 +240,12 @@ class Parse(object):
                 if rowLanDic == None:
                     exit(1)
 
-                rowLanDic[self._getTitleWithNotSuffix(title)] = value
+                ''' 获取json对应的英文标题 '''
+                title = self._getTitleWithNotSuffix(title)
+                jsonTitle = self._getJsonTitle(title, jsonTitleConfigDic, sheetObj.name)
+                print "title ==> ", title, " jsonTitle => ", jsonTitle
+
+                rowLanDic[jsonTitle] = value
                 # print "Ron => ", self._getTitleWithNotSuffix(title), value
                 # print("rowLanDic===> ", rowLanDic)
 
@@ -253,7 +271,7 @@ class Parse(object):
 
         # data = bson.dumps({"dataArray": resultArray})
         # data = json.dumps({"dataArray": resultArray})
-        data = json.dumps(resultArray)
+        data = json.dumps(allJsonArray)
         fullPath = self._getSaveFileFullPath(sheetObj.name)
         fileObj = open(fullPath, "wb")
         fileObj.write(data.encode("utf-8"))
@@ -326,6 +344,45 @@ class Parse(object):
             os.makedirs(self.outputPath)
         except:
             pass
+
+
+    def _getTitleConfigNameBySheetName(self, sheetName):
+        """
+        根据表名获取对应的 英文 表头的
+        :param sheetName: 
+        :return: 
+        """
+        try:
+            fileName = "Title_%s.json" % sheetName
+            fileObj = open(fileName)
+            data = fileObj.read()
+            fileObj.close()
+
+            return json.loads(data)
+
+        except:
+            errMsg = u"表 ==> [%s] 没有对应的英文标题(或者解析Json出错)" % sheetName
+            print errMsg
+            return None
+
+
+    def _getJsonTitle(self, title, jsonTitleDic, sheetName=""):
+        """
+        获取C# 那边的对应的属性名
+        :param title: 
+        :param jsonTitleDic: 
+        :return: 
+        """
+        if jsonTitleDic == None:
+            return title
+
+        jsonTitle = jsonTitleDic.get(title)
+        if jsonTitle == None:
+            errMsg = u"表头 => [%s] 找不到对应的json标题.请检查表 => [%s] 对应的配置" % (title, sheetName)
+            print errMsg
+            exit(1)
+
+        return jsonTitle
 
 
     def start(self):

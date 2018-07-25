@@ -1,0 +1,11 @@
+{
+  "ID": "Id",
+  "神兽名称": "Name",
+  "神兽名称-中": "Name",
+  "神兽详情": "Desc",
+  "元素属性": "ElementType",
+  "标签ID": "LabelId",
+  "基础属性": "BaseAttribute",
+  "固有卡牌ID": "FixCardId",
+  "被动技能ID": "PassiveSkillId"
+}
