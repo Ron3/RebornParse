@@ -1,0 +1,14 @@
+{
+  "ID": "Id",
+  "卡牌名称": "Name",
+  "卡牌名称-中": "Name",
+  "策划用ID": "NoneID",
+  "卡牌描述": "Desc",
+  "卡牌描述-中": "Desc",
+  "卡牌元素属性": "CardElementType",
+  "卡牌类型": "CardType",
+  "能量消耗": "EnergyCost",
+  "卡牌技能ID": "SkillId",
+  "图标ID": "IconId",
+  "被动图标ID": "PassiveIconId"
+}

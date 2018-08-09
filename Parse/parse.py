@@ -183,6 +183,13 @@ class Parse(object):
                 valCell = valueArray[tmpIndex]
                 value = valCell.value
 
+                # TODO Ron. 目前先这样做吧.稍后在改 2018-07-26
+                if valCell.ctype == xlrd.XL_CELL_NUMBER:
+                    valCell.value = int(valCell.value)
+
+                value = valCell.value
+                print "valCell.ctype=> ", valCell.ctype, type(valCell), " value => ", valCell.value
+
                 ''' 过滤空白字符 '''
                 if valCell.ctype != xlrd.XL_CELL_EMPTY and valCell.ctype != xlrd.XL_CELL_BLANK or (isinstance(tmpValue, str) and len(tmpValue.strip()) <= 0):
                     if isinstance(value, str) and len(value.strip()) <= 0:
@@ -404,16 +411,16 @@ class Parse(object):
 if __name__ == "__main__":
     PARSE_SETTING_DIC = {}
     PARSE_SETTING_DIC[u"-中"] = "cn"
-    PARSE_SETTING_DIC[u"-繁"] = "tc"
-    PARSE_SETTING_DIC[u"-英"] = "en"
-    PARSE_SETTING_DIC[u"-日"] = "jp"
-    PARSE_SETTING_DIC[u"-韩"] = "ko"
-    PARSE_SETTING_DIC[u"-法"] = "fr"
-    PARSE_SETTING_DIC[u"-德"] = "de"
-    PARSE_SETTING_DIC[u"-泰"] = "th"
-    PARSE_SETTING_DIC[u"-葡"] = "pt"
-    PARSE_SETTING_DIC[u"-俄"] = "ru"
-    PARSE_SETTING_DIC[u"-西"] = "es"
+    # PARSE_SETTING_DIC[u"-繁"] = "tc"
+    # PARSE_SETTING_DIC[u"-英"] = "en"
+    # PARSE_SETTING_DIC[u"-日"] = "jp"
+    # PARSE_SETTING_DIC[u"-韩"] = "ko"
+    # PARSE_SETTING_DIC[u"-法"] = "fr"
+    # PARSE_SETTING_DIC[u"-德"] = "de"
+    # PARSE_SETTING_DIC[u"-泰"] = "th"
+    # PARSE_SETTING_DIC[u"-葡"] = "pt"
+    # PARSE_SETTING_DIC[u"-俄"] = "ru"
+    # PARSE_SETTING_DIC[u"-西"] = "es"
 
     obj = Parse(PARSE_SETTING_DIC)
     obj.start()
