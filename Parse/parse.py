@@ -135,11 +135,11 @@ class Parse(object):
             excelDataObj = xlrd.open_workbook(fullPath)
             sheetNameArray = excelDataObj.sheet_names()
             for sheetName in sheetNameArray:
-                jsonTitleDic = self._getTitleConfigNameBySheetName(sheetName)
+                # jsonTitleDic = self._getTitleConfigNameBySheetName(sheetName)
 
                 sheetObj = excelDataObj.sheet_by_name(sheetName)
                 resultArray = self._parseSheet(sheetObj)
-                self._writeToFile(resultArray, sheetObj, jsonTitleDic)
+                self._writeToFile(resultArray, sheetObj)
 
                 del sheetObj
                 del resultArray
